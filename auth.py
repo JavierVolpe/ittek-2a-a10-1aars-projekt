@@ -1,8 +1,17 @@
 # auth.py
+from flask_login import UserMixin
 import ldap3
 import logging
 
 logging.basicConfig(level=logging.DEBUG)
+
+class User(UserMixin):
+    def __init__(self, username, groups=[]):
+        self.username = username
+        self.groups = groups
+
+    def get_id(self):
+        return self.username
 
 def authenticate(server_uri, domain, username, password):
     user_dn = f"{username}@{domain}"
@@ -29,12 +38,12 @@ def authenticate(server_uri, domain, username, password):
         )
 
         # Get the list of groups
-        groups = connection.entries[0]['memberOf']
-        group_names = [group.split(',')[0].split('=')[1] for group in groups]
-        logging.debug(f"User groups: {group_names}")
+        groups = [group.split(',')[0].split('=')[1] for group in connection.entries[0]['memberOf']]
+        logging.debug(f"User groups: {groups}")
+
+        user = User(username, groups)
+        return user
 
     except ldap3.core.exceptions.LDAPException as e:
         logging.error(f"LDAP exception: {e}")
         raise ValueError("LDAP authentication failed")
-
-    return connection, group_names

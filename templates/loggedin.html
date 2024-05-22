@@ -26,10 +26,15 @@
 </head>
 <body>
     <div class="card">
-        <h1 class="text-center">Successfully Logged In!</h1>
+        <h1 class="text-center">Successfully Logged In as {{ user }}</h1>
         <h2>Your Groups:</h2>
         <ul class="list-group">
             {% for group in groups %}
+                {% if group == 'HR' %}
+                    <li class="list-group-item list-group-item-danger">{{ group }}</li>
+                {% elif group == 'IT' %}
+                    <li class="list-group-item list-group-item-success">{{ group }}</li>
+                {% endif %}
                 <li class="list-group-item">{{ group }}</li>
             {% endfor %}
         </ul>
