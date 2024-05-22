@@ -1,46 +1,21 @@
-<!-- templates/login.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
-    <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            margin: 0;
-            padding: 0;
-            height: 100vh;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            background-color: #f8f9fa;
-        }
-        .card {
-            width: 400px;
-            padding: 20px;
-            border: 1px solid #ced4da;
-            border-radius: 5px;
-        }
-    </style>
-</head>
-<body>
-    <div class="card">
-        <h1 class="text-center">Login</h1>
-        <form action="/" method="post">
-            <div class="form-group">
-                <label for="username">Username:</label>
-                <input type="text" class="form-control" id="username" name="username" required>
-            </div>
-            <div class="form-group">
-                <label for="password">Password:</label>
-                <input type="password" class="form-control" id="password" name="password" required>
-            </div>
-            <button type="submit" class="btn btn-primary btn-block">Login</button>
-        </form>
-        {% if error %}
-            <p class="text-danger">{{ error }}</p>
-        {% endif %}
-    </div>
-</body>
-</html>
+{% extends "base.html" %}
+{% block title %}loggedin{% endblock %}
+{% block content %}
+<div class="card text-center mx-auto" style="width: 18rem; height: 4000px;">
+    <h1 class="text-center">Login</h1>
+    <form action="/" method="post">
+        <div class="form-group">
+            <label for="username">Username:</label>
+            <input type="text" class="form-control" id="username" name="username" required>
+        </div>
+        <div class="form-group">
+            <label for="password">Password:</label>
+            <input type="password" class="form-control" id="password" name="password" required>
+        </div>
+        <button type="submit" class="btn btn-primary btn-block">Login</button>
+    </form>
+    {% if error %}
+        <p class="text-danger">{{ error }}</p>
+    {% endif %}
+</div>
+{% endblock %}
