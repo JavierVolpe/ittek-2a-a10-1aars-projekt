@@ -13,8 +13,9 @@ def login():
         username = request.form['username']
         password = request.form['password']
         try:
-            authenticate(server_uri, domain, username, password)
-            return redirect("/loggedin")
+            connection, groups = authenticate(server_uri, domain, username, password)
+            context['groups'] = groups
+            return render_template("loggedin.html", **context)
         except ValueError as err:
             context["error"] = str(err)
 
@@ -22,7 +23,8 @@ def login():
 
 @app.route("/loggedin")
 def loggedin():
-    return "Successfully logged in!"
+    groups = request.args.get('groups', [])
+    return render_template("loggedin.html", groups=groups)
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=5000, debug=True)

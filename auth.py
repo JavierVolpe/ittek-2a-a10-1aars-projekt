@@ -5,7 +5,6 @@ import logging
 logging.basicConfig(level=logging.DEBUG)
 
 def authenticate(server_uri, domain, username, password):
-    # Use user principal name (UPN) format for AD authentication
     user_dn = f"{username}@{domain}"
     logging.debug(f"User DN: {user_dn}")
 
@@ -21,9 +20,21 @@ def authenticate(server_uri, domain, username, password):
             raise ValueError("Invalid credentials")
         else:
             logging.debug("Successfully authenticated.")
-        
+
+        # Search for the user's groups
+        connection.search(
+            search_base=f"dc={domain.split('.')[0]},dc={domain.split('.')[1]}",
+            search_filter=f"(sAMAccountName={username})",
+            attributes=['memberOf']
+        )
+
+        # Get the list of groups
+        groups = connection.entries[0]['memberOf']
+        group_names = [group.split(',')[0].split('=')[1] for group in groups]
+        logging.debug(f"User groups: {group_names}")
+
     except ldap3.core.exceptions.LDAPException as e:
         logging.error(f"LDAP exception: {e}")
         raise ValueError("LDAP authentication failed")
 
-    return connection
+    return connection, group_names
