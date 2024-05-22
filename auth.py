@@ -12,6 +12,9 @@ class User(UserMixin):
 
     def get_id(self):
         return self.username
+        
+    def get_groups(self):  # Corrected method name
+        return self.groups
 
 def authenticate(server_uri, domain, username, password):
     user_dn = f"{username}@{domain}"
