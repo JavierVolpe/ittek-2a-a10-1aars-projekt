@@ -16,7 +16,11 @@ domain = "A10.dk"
 def load_user(username):
     return User(username)
 
-@app.route("/", methods=['POST', 'GET'])
+@app.route("/")
+def home():
+    return render_template("home.html")
+
+@app.route("/login", methods=['POST', 'GET'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
@@ -29,7 +33,6 @@ def login():
             return render_template("loggedin.html", user=username, groups=groups_user)
         except ValueError as err:
             return render_template("login.html", error=str(err))
-
     return render_template("login.html")
 
 @app.route("/loggedin")
