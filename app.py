@@ -22,7 +22,6 @@ def login():
         username = request.form['username']
         password = request.form['password']
         try:
-            user
             user = authenticate(server_uri, domain, username, password)
             login_user(user)
             username = user.username
