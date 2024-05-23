@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+
+{% block title %}it-chat{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <div id="chat-container" class="card">
+        <div id="chat-box" class="card-body overflow-auto" style="height: 60vh;">
+            <!-- Messages will be displayed here -->
+        </div>
+        <div class="card-footer">
+            <form id="chat-form" class="d-flex">
+                <input type="text" id="chat-input" class="form-control me-2" placeholder="Type your message..." autocomplete="off" required>
+                <button type="submit" class="btn btn-primary">Send</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
+<script type="text/javascript">
+    const socket = io();
+
+    const chatForm = document.getElementById('chat-form');
+    const chatBox = document.getElementById('chat-box');
+    const chatInput = document.getElementById('chat-input');
+
+    chatForm.addEventListener('submit', function(event) {
+        event.preventDefault();
+        const message = chatInput.value.trim();
+        if (message !== '') {
+            const username = "{{ user }}";
+            socket.emit('send_message', { username, message });
+            chatInput.value = '';
+        }
+    });
+
+    socket.on('receive_message', function(data) {
+        const newMessage = document.createElement('div');
+        newMessage.classList.add('my-2', 'p-2', 'border', 'rounded', 'bg-light');
+        newMessage.textContent = `${data.username}: ${data.message}`;
+        chatBox.appendChild(newMessage);
+        chatBox.scrollTop = chatBox.scrollHeight;
+    });
+</script>
+{% endblock %}
