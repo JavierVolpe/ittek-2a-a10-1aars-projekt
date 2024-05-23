@@ -20,7 +20,7 @@ def load_user(username):
 def home():
     return render_template("home.html")
 
-@app.route("/login", methods=['POST', 'GET'])
+@app.route("/login", methods=["GET","POST"])
 def login():
     if request.method == 'POST':
         username = request.form['username']

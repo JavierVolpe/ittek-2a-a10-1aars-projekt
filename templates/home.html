@@ -1,4 +1,9 @@
 {% extends "base.html" %}
 {% block title %}home{% endblock %}
 {% block content %}
+{% if current_user.is_authenticated %}
+<h1 class="text-center">ITS PARTY TIME</h1>
+{% else %}
+<h1 class="text-center">Pls log in via the login button in the navbar</h1>
+{% endif %}
 {% endblock %}

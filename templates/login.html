@@ -1,9 +1,9 @@
 {% extends "base.html" %}
-{% block title %}loggedin{% endblock %}
+{% block title %}Login{% endblock %}
 {% block content %}
 <div class="card text-center mx-auto" style="width: 18rem; height: 400px;">
     <h1 class="text-center">Login</h1>
-    <form action="/" method="post">
+    <form action="/login" method="post">
         <div class="form-group">
             <label for="username">Username:</label>
             <input type="text" class="form-control" id="username" name="username" required>
