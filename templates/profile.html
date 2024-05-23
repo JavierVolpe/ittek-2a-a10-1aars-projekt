@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}profile{% endblock %}
+{% block content %}
+<div class="card text-center mx-auto" style="width: 600px;">
+    <h1 class="card-title text-center">Oversigt over dine grupper! {{ user }}</h1>
+    <div class="card-body">
+    <h2>Your Groups:</h2>
+    <ul class="list-group">
+        {% for group in groups %}
+            <li class="list-group-item">{{ group }}</li>
+        {% endfor %}
+    </ul>
+    </div>
+</div>
+{% endblock %}

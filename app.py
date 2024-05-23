@@ -26,11 +26,10 @@ def login():
         username = request.form['username']
         password = request.form['password']
         try:
+            global user
             user = authenticate(server_uri, domain, username, password)
             login_user(user)
-            username = user.username
-            groups_user = user.groups
-            return render_template("loggedin.html", user=username, groups=groups_user)
+            return render_template("home.html")
         except ValueError as err:
             return render_template("login.html", error=str(err))
     return render_template("login.html")
@@ -48,6 +47,9 @@ def logout():
     logout_user()
     return redirect("/")
 
+@app.route("/profile")
+def profile():
+    return render_template("profile.html", user=user.username, groups=user.groups)
 @app.route("/show")
 @login_required
 def show():
