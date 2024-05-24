@@ -10,8 +10,6 @@ def get_db():
         db.row_factory = sqlite3.Row  # This enables column access by name: row['column_name']
     return db
     
-
-
 def get_latest_news(permissions):
     db = get_db()
     if permissions:
@@ -33,3 +31,11 @@ def get_latest_news(permissions):
     
     news_items = cur.fetchall()
     return news_items
+
+def add_post_to_database(title, content, author, permissions, timestamp):
+    conn = get_db()
+    cur = conn.cursor()
+    cur.execute('INSERT INTO news (title, content, author, permissions, timestamp) VALUES (?, ?, ?, ?, ?)',
+                (title, content, author, permissions, timestamp))
+    conn.commit()
+    conn.close()

@@ -81,6 +81,23 @@ def news():
     news_items = get_latest_news(current_user.groups)
     return render_template("news.html", user=current_user.username, groups=current_user.groups, news_items=news_items)
 
+@app.route('/create', methods=['GET', 'POST'])
+@login_required
+def create_post():
+    if request.method == 'POST':
+        # Logic to handle the form submission
+        title = request.form.get('title')
+        content = request.form.get('content')
+        author = current_user.username
+        permissions = request.form.get('permissions')
+        timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
+
+        # Assuming you have a function to add this to your database
+        add_post_to_database(title, content, author, permissions, timestamp)
+
+        return redirect("/news")
+    return render_template('create_post.html')
+
 @app.route("/it-chat", methods=["GET", "POST"])
 @login_required
 def itchat():
