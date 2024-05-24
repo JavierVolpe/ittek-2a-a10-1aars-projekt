@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% block title %}News{% endblock %}
+{% block content %}
+<div class="container">
+    <h1>Latest News</h1>
+    {% for item in news_items %}
+    <div class="news-item">
+        <h2>{{ item['title'] }}</h2>
+        <p>{{ item['content'] }}</p>
+        <p><small>Published on: {{ item['timestamp'] }} by {{ item['author'] }}</small></p>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}
