@@ -41,8 +41,14 @@ def load_user(username):
     user.groups = get_user_groups(username)
     return user
 
-@app.route("/")
+@app.route("/", methods=["GET", "POST"])
 def home():
+    if request.method == "POST":
+        content = request.form['content']
+        card = MessageCard(author=current_user.username, content=content, group="main")
+        db.session.add(card)
+        db.session.commit()
+        return redirect(request.referrer)
     cards = MessageCard.query.filter_by(group="main").order_by(MessageCard.timestamp.desc()).all()
     return render_template("home.html", cards=cards, datetime=datetime)
 
