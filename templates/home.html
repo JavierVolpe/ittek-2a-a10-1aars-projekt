@@ -3,19 +3,16 @@
 {% block content %}
 {% if current_user.is_authenticated %}
 <h1 class="text-center">ITS PARTY TIME</h1>
-<h2 class="text-center">Main Board</h2>
-<form method="POST" action="/message-cards" class="mb-4">
-    <div class="mb-3">
-        <textarea class="form-control" name="content" placeholder="Write your message here..." required></textarea>
-    </div>
-    <input type="hidden" name="group" value="main">
-    <button type="submit" class="btn btn-primary">Post</button>
-</form>
-<div>
+<div class="card-columns">
     {% for card in cards %}
     <div class="card mb-3">
+        <div class="card-header">
+            <strong>{{ card.author }}</strong>
+            <span class="text-muted">
+                {{ card.timestamp.strftime('%Y-%m-%d' if card.timestamp.date() < datetime.utcnow().date() else '%H:%M:%S') }}
+            </span>
+        </div>
         <div class="card-body">
-            <h5 class="card-title">{{ card.author }} - {{ card.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</h5>
             <p class="card-text">{{ card.content }}</p>
         </div>
     </div>

@@ -1,19 +1,30 @@
 {% extends "base.html" %}
-{% block title %}{{ group }} Board{% endblock %}
+{% block title %}Message Boards{% endblock %}
 {% block content %}
-<h2 class="text-center">{{ group }} Board</h2>
-<form method="POST" action="/message-cards" class="mb-4">
-    <div class="mb-3">
-        <textarea class="form-control" name="content" placeholder="Write your message here..." required></textarea>
-    </div>
-    <input type="hidden" name="group" value="{{ group }}">
-    <button type="submit" class="btn btn-primary">Post</button>
-</form>
-<div>
+<h2 class="text-center">Message Boards</h2>
+
+<div class="dropdown mb-4">
+    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
+        Select a Board
+    </button>
+    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+        {% for group in current_user.groups %}
+        <li><a class="dropdown-item" href="/{{ group }}-chat">{{ group }} Board</a></li>
+        {% endfor %}
+    </ul>
+</div>
+
+<div class="card-columns">
     {% for card in cards %}
     <div class="card mb-3">
+        <div class="card-header">
+            <strong>{{ card.author }}</strong>
+            <span class="text-muted">
+                {{ card.timestamp.strftime('%Y-%m-%d' if card.timestamp.date() < datetime.utcnow().date() else '%H:%M:%S') }}
+            </span>
+            <span class="badge bg-primary">{{ card.group }}</span>
+        </div>
         <div class="card-body">
-            <h5 class="card-title">{{ card.author }} - {{ card.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</h5>
             <p class="card-text">{{ card.content }}</p>
         </div>
     </div>
