@@ -1,5 +1,7 @@
 import sqlite3
 from flask import g
+import logging
+
 
 DATABASE = 'database.db'
 
@@ -37,7 +39,7 @@ def get_latest_news(permissions):
         # from the permissions list in each iteration of the loop. We just want to repeat 
         # "permissions LIKE ?" for the number of permissions we have. Hence, "_" is a throwaway variable.
         like_clauses = " OR ".join("permissions LIKE ?" for _ in permissions)
-        
+
         # Create the SQL query string
         query = f'SELECT * FROM news WHERE {like_clauses} ORDER BY timestamp DESC LIMIT 5'
         # Prepare the parameters for the LIKE clause
@@ -56,22 +58,63 @@ def get_latest_news(permissions):
     return news_items
 
 
+def validate_input(title, content, author, permissions, timestamp):
+    # Validate title
+    if not isinstance(title, str) or not (1 <= len(title) <= 100):
+        raise ValueError("Title must be a string between 1 and 100 characters")
+    
+    # Validate content
+    if not isinstance(content, str) or not (1 <= len(content) <= 2000):
+        raise ValueError("Content must be a string between 1 and 2000 characters")
+    
+    # Validate author
+    if not isinstance(author, str) or not author:
+        raise ValueError("Author must be a non-empty string")
+    
+    # Validate permissions
+    if not isinstance(permissions, list) or not all(isinstance(p, str) for p in permissions):
+        raise ValueError("Permissions must be a list of strings")
+    
+    # If all validations pass, return True
+    return True
+
 def add_post_to_database(title, content, author, permissions, timestamp):
-    # Get a connection to the database
-    conn = get_db()
-    # Get a cursor object
-    cur = conn.cursor()
+    conn = None
+    try:
+        # Validate inputs
+        validate_input(title, content, author, permissions, timestamp)
 
-    # Join the list of permissions with a comma
-    permissions_str = ", ".join(permissions)  # Ensure permissions is a list of full strings
-    # Print the permissions list and string for debugging
-    print("Permissions list:", permissions)
-    print("Permissions_str list:", permissions_str)
+        # Get a connection to the database
+        conn = get_db()
+        
+        with conn:
+            # Get a cursor object
+            cur = conn.cursor()
 
-    # Insert the post into the database
-    cur.execute('INSERT INTO news (title, content, author, permissions, timestamp) VALUES (?, ?, ?, ?, ?)',
-                (title, content, author, permissions_str, timestamp))
-    # Commit the changes
-    conn.commit()
-    # Close the connection
-    conn.close()
+            if permissions is None or not permissions:
+                permissions = ['Public']
+            
+            # Join the list of permissions with a comma
+            permissions_str = ", ".join(permissions)
+            
+            # Insert the post into the database
+            cur.execute('INSERT INTO news (title, content, author, permissions, timestamp) VALUES (?, ?, ?, ?, ?)',
+                        (title, content, author, permissions_str, timestamp))
+            
+            # Commit the changes (handled by the context manager)
+            
+        # Log the successful insertion
+        logging.info(f"Post by {author} added to the database successfully on {timestamp}.")
+
+    except sqlite3.DatabaseError as db_err:
+        logging.error(f"Database error occurred: {db_err}")
+        raise
+    
+    except Exception as ex:
+        logging.error(f"An error occurred: {ex}")
+        raise
+
+    finally:
+        # Ensure the connection is closed
+        if conn:
+            conn.close()
