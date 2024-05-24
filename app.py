@@ -92,7 +92,7 @@ def create_post():
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         add_post_to_database(title, content, author, permissions, timestamp)
         return redirect("/news")
-    return render_template('create_post.html')
+    return render_template('create_post.html', user=current_user.username, groups=current_user.groups)
 
 @app.route("/it-chat", methods=["GET", "POST"])
 @login_required

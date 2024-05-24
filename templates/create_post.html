@@ -15,9 +15,9 @@
         <div class="form-group">
             <label for="permissions">Permissions:</label>
             <select class="form-control" id="permissions" name="permissions">
-                <option>IT</option>
-                <option>HR</option>
-                <option>Public</option>
+                {% for group in groups %}
+                <option>{{ group }}</option>
+                {% endfor %}
             </select>
         </div>
         <button type="submit" class="btn btn-primary">Submit</button>
