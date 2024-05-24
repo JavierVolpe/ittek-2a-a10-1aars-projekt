@@ -7,8 +7,9 @@
     <div class="news-item">
         <h2>{{ item['title'] }}</h2>
         <p>{{ item['content'] }}</p>
-        <p><small>Published on: {{ item['timestamp'] }} by {{ item['author'] }}</small></p>
+        <p><small>Published on: {{ item['timestamp'] }} by {{ item['author'] }} ({{ item['permissions'] }})</small></p>
     </div>
     {% endfor %}
+    <a href="/create" class="btn btn-primary">Create New Post</a>
 </div>
 {% endblock %}
