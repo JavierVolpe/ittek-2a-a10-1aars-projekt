@@ -81,11 +81,14 @@ def logout():
 def profile():
     return render_template("profile.html", user=current_user.username, groups=current_user.groups)
 
-@app.route("/news", methods=["GET", "POST"])
+@app.route('/news')
 @login_required
-def news():
-    news_items = get_latest_news(current_user.groups)
-    return render_template("news.html", user=current_user.username, groups=current_user.groups, news_items=news_items)
+def show_news():
+    page = request.args.get('page', 1, type=int)
+    permissions = current_user.groups
+    news_items = get_latest_news(permissions, page=page, page_size=5)
+    return render_template('news.html', news_items=news_items, page=page)
+
 
 @app.route('/create', methods=['GET', 'POST'])
 @login_required
