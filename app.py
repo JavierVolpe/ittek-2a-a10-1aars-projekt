@@ -4,7 +4,7 @@ from flask_socketio import SocketIO, emit
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from auth import authenticate, User, get_user_groups
-from news import get_latest_news
+from news import get_latest_news,add_post_to_database
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_is_not_thisone'
@@ -149,6 +149,11 @@ def group_chat(group):
 def handle_send_message_event(data):
     app.logger.info("{} has sent message to the room: {}".format(data['username'], data['message']))
     emit('receive_message', data, broadcast=True)
+
+#dassssssssssss
+#dsaaaaaaaaaa#
+#dasdasdsad#
+#asdsadasd
 
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5000, debug=True)
