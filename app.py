@@ -4,7 +4,7 @@ from flask_socketio import SocketIO, emit
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from auth import authenticate, User, get_user_groups
-from news import get_latest_news,add_post_to_database
+from news import get_latest_news, add_post_to_database
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_is_not_thisone'
@@ -44,7 +44,7 @@ def load_user(username):
 @app.route("/")
 def home():
     cards = MessageCard.query.filter_by(group="main").order_by(MessageCard.timestamp.desc()).all()
-    return render_template("home.html", cards=cards)
+    return render_template("home.html", cards=cards, datetime=datetime)
 
 @app.route("/login", methods=["GET", "POST"])
 def login():
@@ -85,16 +85,12 @@ def news():
 @login_required
 def create_post():
     if request.method == 'POST':
-        # Logic to handle the form submission
         title = request.form.get('title')
         content = request.form.get('content')
         author = current_user.username
         permissions = request.form.get('permissions')
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
-
-        # Assuming you have a function to add this to your database
         add_post_to_database(title, content, author, permissions, timestamp)
-
         return redirect("/news")
     return render_template('create_post.html')
 
@@ -135,7 +131,7 @@ def message_cards():
     
     user_groups = current_user.groups
     cards = MessageCard.query.filter(MessageCard.group.in_(user_groups)).order_by(MessageCard.timestamp.desc()).all()
-    return render_template("message_cards.html", cards=cards)
+    return render_template("message_cards.html", cards=cards, datetime=datetime)
 
 @app.route("/<group>-chat")
 @login_required
@@ -143,17 +139,12 @@ def group_chat(group):
     if group not in current_user.groups:
         return "Access Denied", 403
     cards = MessageCard.query.filter_by(group=group).order_by(MessageCard.timestamp.desc()).all()
-    return render_template("message_board.html", cards=cards, group=group)
+    return render_template("message_board.html", cards=cards, group=group, datetime=datetime)
 
 @socketio.on('send_message')
 def handle_send_message_event(data):
     app.logger.info("{} has sent message to the room: {}".format(data['username'], data['message']))
     emit('receive_message', data, broadcast=True)
-
-#dassssssssssss
-#dsaaaaaaaaaa#
-#dasdasdsad#
-#asdsadasd
 
 if __name__ == "__main__":
     socketio.run(app, host="0.0.0.0", port=5000, debug=True)
