@@ -89,7 +89,9 @@ def create_post():
         title = request.form.get('title')
         content = request.form.get('content')
         author = current_user.username
-        permissions = request.form.get('permissions')
+        # Fetch multiple permissions as a list
+        permissions = request.form.getlist('permissions')
+        print("Permissions:", permissions)  # Debugging line to check the fetched permissions
         timestamp = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
 
         # Assuming you have a function to add this to your database
