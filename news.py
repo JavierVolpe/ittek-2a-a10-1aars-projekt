@@ -23,39 +23,28 @@ def get_db():
     # Finally, we return the 'db' object which now represents our database connection.
     return db
     
-def get_latest_news(permissions):
-    # Get a connection to the database
+def get_latest_news(permissions, page=1, page_size=5):
     db = get_db()
+    offset = (page - 1) * page_size
 
-    # If permissions are specified
     if permissions:
-        # If permissions is not a list, convert it to a list
         if not isinstance(permissions, list):
             permissions = [permissions]
 
         # Construct the WHERE clause using LIKE for each permission
-        # Here, we use "permissions LIKE ?" for each permission in the permissions list.
-        # The underscore "_" is a convention in Python meaning that we don't care about the actual value
-        # from the permissions list in each iteration of the loop. We just want to repeat 
-        # "permissions LIKE ?" for the number of permissions we have. Hence, "_" is a throwaway variable.
         like_clauses = " OR ".join("permissions LIKE ?" for _ in permissions)
-
-        # Create the SQL query string
-        query = f'SELECT * FROM news WHERE {like_clauses} ORDER BY timestamp DESC LIMIT 5'
+        query = f'SELECT * FROM news WHERE {like_clauses} ORDER BY timestamp DESC LIMIT ? OFFSET ?'
         # Prepare the parameters for the LIKE clause
         like_params = [f'%{permission}%' for permission in permissions]
-        # Execute the query with the parameters
-        cur = db.execute(query, like_params)
+        cur = db.execute(query, like_params + [page_size, offset])
     else:
-        # If no permissions are specified, default to 'Public'
-        query = 'SELECT * FROM news WHERE permissions LIKE ? ORDER BY timestamp DESC LIMIT 5'
-        # Execute the query with 'Public' as the parameter
-        cur = db.execute(query, ['%Public%'])
+        # Default to 'Public' if no permissions specified
+        query = 'SELECT * FROM news WHERE permissions LIKE ? ORDER BY timestamp DESC LIMIT ? OFFSET ?'
+        cur = db.execute(query, ['%Public%', page_size, offset])
 
-    # Fetch all the rows returned by the query
     news_items = cur.fetchall()
-    # Return the fetched rows
     return news_items
+
 
 
 def validate_input(title, content, author, permissions, timestamp):
