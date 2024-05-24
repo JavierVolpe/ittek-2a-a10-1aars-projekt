@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block title %}Admin panel{% endblock %}
+{% block content %}
+    <div class="container mt-5">
+        <h2 class="mb-4">Admin Panel - All Posts</h2>
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th scope="col">ID</th>
+                    <th scope="col">Author</th>
+                    <th scope="col">Content</th>
+                    <th scope="col">Timestamp</th>
+                    <th scope="col">Group</th>
+                    <th scope="col">Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for post in all_posts %}
+                <tr>
+                    <th scope="row">{{ post.id }}</th>
+                    <td>{{ post.author }}</td>
+                    <td>{{ post.content }}</td>
+                    <td>{{ post.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                    <td>{{ post.group }}</td>
+                    <td>
+                        <form action="/delete-post/{{ post.id }}" method="post">
+                            <button type="submit" class="btn btn-danger">Delete</button>
+                        </form>
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+    {% endblock %}
