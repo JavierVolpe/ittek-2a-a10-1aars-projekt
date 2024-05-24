@@ -72,13 +72,6 @@ def logout():
 def profile():
     return render_template("profile.html", user=current_user.username, groups=current_user.groups)
 
-@app.route("/show")
-@login_required
-def show():
-    groups_user = current_user.groups
-    logged_user = current_user.username
-    return render_template("show.html", groups=groups_user, user=logged_user)
-
 @app.route("/it-chat", methods=["GET", "POST"])
 @login_required
 def itchat():
