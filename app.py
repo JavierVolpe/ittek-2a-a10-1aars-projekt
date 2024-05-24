@@ -5,6 +5,7 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 import pytz
 from auth import authenticate, User, get_user_groups
+from news import *
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_is_not_thisone'
@@ -28,6 +29,12 @@ class MessageCard(db.Model):
 # Create the database tables
 with app.app_context():
     db.create_all()
+
+@app.teardown_appcontext # Database for news system
+def close_connection(exception):
+    db = getattr(g, '_database', None)
+    if db is not None:
+        db.close()
 
 @login_manager.user_loader
 def load_user(username):
@@ -71,6 +78,14 @@ def logout():
 @login_required
 def profile():
     return render_template("profile.html", user=current_user.username, groups=current_user.groups)
+
+
+@app.route("/news", methods=["GET", "POST"])
+@login_required
+def news():
+    news_items = get_latest_news(current_user.groups)
+    return render_template("news.html", user=current_user.username, groups=current_user.groups, news_items=news_items)
+
 
 @app.route("/it-chat", methods=["GET", "POST"])
 @login_required
