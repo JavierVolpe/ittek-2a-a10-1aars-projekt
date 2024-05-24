@@ -1,11 +1,10 @@
-from flask import Flask, redirect, request, render_template
+from flask import Flask, redirect, request, render_template, g
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user, UserMixin
 from flask_socketio import SocketIO, emit
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
-import pytz
 from auth import authenticate, User, get_user_groups
-from news import *
+from news import get_latest_news
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key_is_not_thisone'
@@ -23,14 +22,14 @@ class MessageCard(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     author = db.Column(db.String(150), nullable=False)
     content = db.Column(db.Text, nullable=False)
-    timestamp = db.Column(db.DateTime, default=lambda: datetime.utcnow().replace(tzinfo=pytz.UTC))
-    group = db.Column(db.String(50), nullable=False)
+    timestamp = db.Column(db.DateTime, default=datetime.utcnow)
+    group = db.Column(db.String(150), nullable=False)
 
 # Create the database tables
 with app.app_context():
     db.create_all()
 
-@app.teardown_appcontext # Database for news system
+@app.teardown_appcontext
 def close_connection(exception):
     db = getattr(g, '_database', None)
     if db is not None:
@@ -54,9 +53,8 @@ def login():
         password = request.form['password']
         try:
             user = authenticate(server_uri, domain, username, password)
-            user.groups = user.groups
             login_user(user)
-            return render_template("home.html")
+            return redirect("/")
         except ValueError as err:
             return render_template("login.html", error=str(err))
     return render_template("login.html")
@@ -64,9 +62,7 @@ def login():
 @app.route("/loggedin")
 @login_required
 def loggedin():
-    groups_user = current_user.groups
-    logged_user = current_user.username
-    return render_template("loggedin.html", groups=groups_user, user=logged_user)
+    return render_template("loggedin.html", groups=current_user.groups, user=current_user.username)
 
 @app.route("/logout")
 @login_required
@@ -79,13 +75,11 @@ def logout():
 def profile():
     return render_template("profile.html", user=current_user.username, groups=current_user.groups)
 
-
 @app.route("/news", methods=["GET", "POST"])
 @login_required
 def news():
     news_items = get_latest_news(current_user.groups)
     return render_template("news.html", user=current_user.username, groups=current_user.groups, news_items=news_items)
-
 
 @app.route("/it-chat", methods=["GET", "POST"])
 @login_required
@@ -117,24 +111,20 @@ def message_cards():
     if request.method == "POST":
         content = request.form['content']
         group = request.form['group']
-        if group not in current_user.groups and group != "main":
-            return redirect("/message-cards")
-
-        new_card = MessageCard(author=current_user.username, content=content, group=group)
-        db.session.add(new_card)
+        card = MessageCard(author=current_user.username, content=content, group=group)
+        db.session.add(card)
         db.session.commit()
-        return redirect(f"/message-cards/{group}")
+        return redirect(request.referrer)
     
     user_groups = current_user.groups
     cards = MessageCard.query.filter(MessageCard.group.in_(user_groups)).order_by(MessageCard.timestamp.desc()).all()
-    return render_template("message_cards.html", cards=cards, groups=user_groups)
+    return render_template("message_cards.html", cards=cards)
 
-@app.route("/message-cards/<group>", methods=["GET"])
+@app.route("/<group>-chat")
 @login_required
-def message_board(group):
-    if group not in current_user.groups and group != "main":
-        return redirect("/message-cards")
-
+def group_chat(group):
+    if group not in current_user.groups:
+        return "Access Denied", 403
     cards = MessageCard.query.filter_by(group=group).order_by(MessageCard.timestamp.desc()).all()
     return render_template("message_board.html", cards=cards, group=group)
 

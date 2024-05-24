@@ -13,7 +13,7 @@
     {% for card in cards %}
     <div class="card mb-3">
         <div class="card-body">
-            <h5 class="card-title">{{ card.author }} - <span class="timestamp" data-timestamp="{{ card.timestamp }}">{{ card.timestamp }}</span></h5>
+            <h5 class="card-title">{{ card.author }} - {{ card.timestamp.strftime('%Y-%m-%d %H:%M:%S') }}</h5>
             <p class="card-text">{{ card.content }}</p>
         </div>
     </div>

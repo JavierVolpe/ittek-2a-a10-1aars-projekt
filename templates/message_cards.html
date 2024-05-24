@@ -3,10 +3,15 @@
 {% block content %}
 <h2 class="text-center">Message Boards</h2>
 <div>
+    {% for group in current_user.groups %}
+    <h3><a href="/{{ group }}-chat">{{ group }} Board</a></h3>
+    {% endfor %}
+</div>
+<div>
     {% for card in cards %}
     <div class="card mb-3">
         <div class="card-body">
-            <h5 class="card-title">{{ card.author }} - <span class="timestamp" data-timestamp="{{ card.timestamp }}">{{ card.timestamp }}</span> - {{ card.group }}</h5>
+            <h5 class="card-title">{{ card.author }} - {{ card.timestamp.strftime('%Y-%m-%d %H:%M:%S') }} - {{ card.group }}</h5>
             <p class="card-text">{{ card.content }}</p>
         </div>
     </div>
