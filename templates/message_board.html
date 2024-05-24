@@ -1,14 +1,12 @@
 {% extends "base.html" %}
-{% block title %}Home{% endblock %}
+{% block title %}{{ group }} Board{% endblock %}
 {% block content %}
-{% if current_user.is_authenticated %}
-<h1 class="text-center">ITS PARTY TIME</h1>
-<h2 class="text-center">Main Board</h2>
+<h2 class="text-center">{{ group }} Board</h2>
 <form method="POST" action="/message-cards" class="mb-4">
     <div class="mb-3">
         <textarea class="form-control" name="content" placeholder="Write your message here..." required></textarea>
     </div>
-    <input type="hidden" name="group" value="main">
+    <input type="hidden" name="group" value="{{ group }}">
     <button type="submit" class="btn btn-primary">Post</button>
 </form>
 <div>
@@ -21,7 +19,4 @@
     </div>
     {% endfor %}
 </div>
-{% else %}
-<h1 class="text-center">Please log in via the login button in the navbar</h1>
-{% endif %}
 {% endblock %}
