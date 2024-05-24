@@ -3,15 +3,42 @@
 {% block content %}
 <h2 class="text-center">Message Boards</h2>
 
-<div class="dropdown mb-4">
-    <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-bs-toggle="dropdown" aria-expanded="false">
-        Select a Board
-    </button>
-    <ul class="dropdown-menu" aria-labelledby="dropdownMenuButton">
-        {% for group in current_user.groups %}
-        <li><a class="dropdown-item" href="/{{ group }}-chat">{{ group }} Board</a></li>
-        {% endfor %}
-    </ul>
+<!-- Button trigger modal -->
+<button type="button" class="btn btn-primary mb-3 text-center" data-bs-toggle="modal" data-bs-target="#postModal">
+  Create New Post
+</button>
+
+<!-- Modal -->
+<div class="modal fade" id="postModal" tabindex="-1" aria-labelledby="postModalLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="postModalLabel">Create New Post</h5>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <form action="/create-post" method="post"> <!-- Update the action with your actual route -->
+        <div class="modal-body">
+          <div class="mb-3">
+            <label for="content" class="form-label">Content</label>
+            <textarea class="form-control" id="content" name="content" rows="3" required></textarea>
+          </div>
+          <div class="mb-3">
+            <label for="group" class="form-label">Group</label>
+            <select class="form-select" id="group" name="group" required>
+              <option selected disabled>Select Group</option>
+              {% for group_name in current_user.groups %}
+              <option value="{{ group_name }}">{{ group_name }}</option>
+              {% endfor %}
+            </select>
+          </div>
+        </div>
+        <div class="modal-footer">
+          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+          <button type="submit" class="btn btn-primary">Create Post</button>
+        </div>
+      </form>
+    </div>
+  </div>
 </div>
 
 <div class="card-columns">
@@ -30,4 +57,5 @@
     </div>
     {% endfor %}
 </div>
+
 {% endblock %}

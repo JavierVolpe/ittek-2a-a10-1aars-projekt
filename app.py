@@ -1,4 +1,4 @@
-from flask import Flask, redirect, request, render_template, g
+from flask import Flask, redirect, request, render_template, url_for, g
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user, UserMixin
 from flask_socketio import SocketIO, emit
 from flask_sqlalchemy import SQLAlchemy
@@ -142,6 +142,28 @@ def group_chat(group):
         return "Access Denied", 403
     cards = MessageCard.query.filter_by(group=group).order_by(MessageCard.timestamp.desc()).all()
     return render_template("message_board.html", cards=cards, group=group, datetime=datetime)
+
+@app.route("/admin-panel")
+@login_required
+def admin_panel():
+    if 'Enterprise Admins' not in current_user.groups:
+        return "Access Denied", 403
+
+    all_posts = MessageCard.query.all()
+    return render_template("admin_panel.html", all_posts=all_posts)
+
+@app.route("/delete-post/<int:post_id>", methods=["POST"])
+@login_required
+def delete_post(post_id):
+    if 'Enterprise Admins' not in current_user.groups:
+        return "Access Denied", 403
+
+    post = MessageCard.query.get(post_id)
+    if post:
+        db.session.delete(post)
+        db.session.commit()
+    return redirect(url_for('admin_panel'))
+
 
 @socketio.on('send_message')
 def handle_send_message_event(data):
