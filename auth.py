@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 from flask_login import UserMixin
 import ldap3
 import logging
