@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% block title %}Message Boards{% endblock %}
 {% block content %}
-<h2 class="text-center">Message Boards</h2>
+<h2 class="text-center">{{ group }} Message Board</h2>
 
 <!-- Button trigger modal -->
 <button type="button" class="btn btn-primary mb-3 text-center" data-bs-toggle="modal" data-bs-target="#postModal">
@@ -16,7 +16,7 @@
         <h5 class="modal-title" id="postModalLabel">Create New Post</h5>
         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
       </div>
-      <form action="/message-cards" method="post">
+      <form action="/message-poster" method="post">
         <div class="modal-body">
           <div class="mb-3">
             <label for="content" class="form-label">Content</label>
