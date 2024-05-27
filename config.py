@@ -12,7 +12,7 @@ class Config:
     LDAP_SERVICE_USERNAME = "A10"
     LDAP_SERVICE_PASSWORD = "Password123!"
 
-    SERVER_PORT = 80 # Port 80: skal køres som root
+    SERVER_PORT = 443 # Port 80/443: skal køres som root
 
 
 

@@ -237,5 +237,6 @@ def handle_room_message(data):
     emit('message', message, to=room)
 
 # Main entry point for running the app
-if __name__ == "__main__": 
-    socketio.run(app, host="0.0.0.0", port=Config.SERVER_PORT, debug=True) 
+if __name__ == '__main__':
+    context = ('cert.pem', 'key.pem')
+    socketio.run(app, host='0.0.0.0', port=Config.SERVER_PORT, ssl_context=context, debug=Config.DEBUG)
