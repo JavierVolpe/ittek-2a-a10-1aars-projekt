@@ -1,10 +1,11 @@
 from flask_login import UserMixin
 import ldap3
 import logging
+from config import Config
 
 logging.basicConfig(level=logging.DEBUG)
-domain = "A10.dk"
-server_uri = "ldap://10.0.0.4:389"
+domain = Config.LDAP_DOMAIN
+server_uri = Config.LDAP_SERVER_URI
 
 class User(UserMixin):
     def __init__(self, username, groups=None):
