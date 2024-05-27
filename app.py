@@ -198,7 +198,7 @@ def admin_panel():
     if 'Enterprise Admins' not in current_user.groups:
         return "Access Denied", 403
 
-    all_posts = MessageCard.query.all()
+    all_posts = MessageCard.query.all().__reversed__()
     return render_template("admin_panel.html", all_posts=all_posts)
 
 # Route to delete a post (admin only)

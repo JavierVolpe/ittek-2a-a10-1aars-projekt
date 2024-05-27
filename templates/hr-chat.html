@@ -1,5 +1,54 @@
 {% extends "base.html" %}
-{% block title %}hr-chat{% endblock %}
+
+{% block title %}HR Department Chat{% endblock %}
+
 {% block content %}
-<h1 class="text-center">HR department chat</h1>
+<h1 class="text-center">HR Department Chat</h1>
+<div class="container mt-4">
+    <div id="chat-container" class="card">
+        <div id="chat-box" class="card-body overflow-auto" style="height: 60vh;">
+            <div id="chat-messages"></div>
+        </div>
+        <div class="card-footer">
+            <form id="chat-form" class="d-flex">
+                <input type="text" id="user-message" class="form-control me-2" placeholder="Type your message..." autocomplete="off" required>
+                <button type="submit" class="btn btn-primary">Send</button>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Socket.IO and JavaScript code here -->
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script>
+    // Connect to Socket.IO with the appropriate room
+    const socket = io({ autoConnect: false, query: { room: '{{ current_user.department }}' } });
+
+    document.addEventListener("DOMContentLoaded", function() {
+        // Subscribe to the receive_message event
+        socket.on("receive_message", function(data) {
+            let chatMessages = document.getElementById("chat-messages");
+            let messageElement = document.createElement("div");
+            messageElement.innerHTML = `<strong>${data.username}:</strong> ${data.message}`;
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        });
+        
+        // Connect to Socket.IO after DOMContentLoaded
+        socket.connect();
+
+        // Handle form submission to send messages
+        document.getElementById("chat-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+            sendMessage();
+        });
+    });
+
+    function sendMessage() {
+        let userMessage = document.getElementById("user-message").value;
+        socket.emit("send_message", { username: "{{ current_user.username }}", message: userMessage });
+        document.getElementById("user-message").value = "";
+    }
+</script>
+
 {% endblock %}

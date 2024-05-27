@@ -1,47 +1,54 @@
 {% extends "base.html" %}
 
-{% block title %}it-chat{% endblock %}
+{% block title %}IT Department Chat{% endblock %}
 
 {% block content %}
-<h1 class="text-center">It department chat</h1>
+<h1 class="text-center">IT Department Chat</h1>
 <div class="container mt-4">
     <div id="chat-container" class="card">
         <div id="chat-box" class="card-body overflow-auto" style="height: 60vh;">
-            <!-- Messages will be displayed here -->
+            <div id="chat-messages"></div>
         </div>
         <div class="card-footer">
             <form id="chat-form" class="d-flex">
-                <input type="text" id="chat-input" class="form-control me-2" placeholder="Type your message..." autocomplete="off" required>
+                <input type="text" id="user-message" class="form-control me-2" placeholder="Type your message..." autocomplete="off" required>
                 <button type="submit" class="btn btn-primary">Send</button>
             </form>
         </div>
     </div>
 </div>
 
-<script src="https://cdn.socket.io/4.0.1/socket.io.min.js"></script>
-<script type="text/javascript">
-    const socket = io();
+<!-- Socket.IO and JavaScript code here -->
+<script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
+<script>
+    // Connect to Socket.IO with the appropriate room
+    const socket = io({ autoConnect: false, query: { room: '{{ current_user.department }}' } });
 
-    const chatForm = document.getElementById('chat-form');
-    const chatBox = document.getElementById('chat-box');
-    const chatInput = document.getElementById('chat-input');
+    document.addEventListener("DOMContentLoaded", function() {
+        // Subscribe to the receive_message event
+        socket.on("receive_message", function(data) {
+            let chatMessages = document.getElementById("chat-messages");
+            let messageElement = document.createElement("div");
+            messageElement.innerHTML = `<strong>${data.username}:</strong> ${data.message}`;
+            chatMessages.appendChild(messageElement);
+            chatMessages.scrollTop = chatMessages.scrollHeight;
+        });
+        
+        // Connect to Socket.IO after DOMContentLoaded
+        socket.connect();
 
-    chatForm.addEventListener('submit', function(event) {
-        event.preventDefault();
-        const message = chatInput.value.trim();
-        if (message !== '') {
-            const username = "{{ user }}";
-            socket.emit('send_message', { username, message });
-            chatInput.value = '';
-        }
+        // Handle form submission to send messages
+        document.getElementById("chat-form").addEventListener("submit", function(event) {
+            event.preventDefault();
+            sendMessage();
+        });
     });
 
-    socket.on('receive_message', function(data) {
-        const newMessage = document.createElement('div');
-        newMessage.classList.add('my-2', 'p-2', 'border', 'rounded', 'bg-light');
-        newMessage.textContent = `${data.username}: ${data.message}`;
-        chatBox.appendChild(newMessage);
-        chatBox.scrollTop = chatBox.scrollHeight;
-    });
+    function sendMessage() {
+        let userMessage = document.getElementById("user-message").value;
+        socket.emit("send_message", { username: "{{ current_user.username }}", message: userMessage });
+        document.getElementById("user-message").value = "";
+    }
 </script>
+
 {% endblock %}
