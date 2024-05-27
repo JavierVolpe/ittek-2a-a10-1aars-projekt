@@ -1,7 +1,7 @@
 # Import necessary modules from Flask and other libraries
 from flask import Flask, redirect, request, render_template, url_for, g
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user, UserMixin
-from flask_socketio import SocketIO, emit
+from flask_socketio import SocketIO, send, join_room, leave_room, emit
 from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from auth import authenticate, User, get_user_groups
@@ -25,7 +25,7 @@ login_manager = LoginManager()
 login_manager.init_app(app)
 
 # Initialize Flask-SocketIO with the app
-socketio = SocketIO(app)
+socketio = SocketIO(app, cors_allowed_origins="*")
 
 # Set the login view for Flask-Login
 login_manager.login_view = "/login"
@@ -139,11 +139,12 @@ def create_post():
     return render_template('create_post.html', user=current_user.username, groups=current_user.groups)
 
 # Route for the IT chat page
+
 @app.route("/it-chat", methods=["GET", "POST"])
 @login_required
 def itchat():
     if 'IT' in current_user.groups:
-        return render_template("it-chat.html", user=current_user.username, groups=current_user.groups)
+        return render_template("it-chat.html", user=current_user.username, groups=current_user.groups, room="IT")
     else:
         return redirect("/")
 
@@ -152,7 +153,7 @@ def itchat():
 @login_required
 def hrchat():
     if 'HR' in current_user.groups:
-        return render_template("hr-chat.html", user=current_user.username, groups=current_user.groups)
+        return render_template("hr-chat.html", user=current_user.username, groups=current_user.groups,room="HR")
     else:
         return redirect("/")
 
@@ -161,7 +162,7 @@ def hrchat():
 @login_required
 def managerchat():
     if 'Manager' in current_user.groups:
-        return render_template("manager-chat.html", user=current_user.username, groups=current_user.groups)
+        return render_template("manager-chat.html", user=current_user.username, groups=current_user.groups,room="manager")
     else:
         return redirect("/")
 
@@ -213,11 +214,24 @@ def delete_post(post_id):
         db.session.commit()
     return redirect(url_for('admin_panel'))
 
-# Socket.IO event handler for sending messages
-@socketio.on('send_message')
-def handle_send_message_event(data):
-    app.logger.info("{} has sent message to the room: {}".format(data['username'], data['message']))
-    emit('receive_message', data, broadcast=True)
+# Socket.IO event handler for joining a room
+@socketio.on('join')
+def handle_join(room):
+    join_room(room)
+    send(f'{current_user.username} has entered the room.', to=room)
+
+# Socket.IO event handler for leaving a room
+@socketio.on('leave')
+def handle_leave(room):
+    leave_room(room)
+    send(f'{current_user.username} has left the room.', to=room)
+
+# Socket.IO event handler for sending messages to a room
+@socketio.on('room_message')
+def handle_room_message(data):
+    room = data['room']
+    message = data['message']
+    emit('message', message, to=room)
 
 # Main entry point for running the app
 if __name__ == "__main__": 

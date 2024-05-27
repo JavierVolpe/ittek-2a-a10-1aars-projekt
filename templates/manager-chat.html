@@ -3,52 +3,50 @@
 {% block title %}Manager Department Chat{% endblock %}
 
 {% block content %}
-<h1 class="text-center">Manager Department Chat</h1>
+<h1 class="text-center">IT Department Chat</h1>
 <div class="container mt-4">
     <div id="chat-container" class="card">
         <div id="chat-box" class="card-body overflow-auto" style="height: 60vh;">
-            <div id="chat-messages"></div>
+            <div id="messages"></div>
         </div>
         <div class="card-footer">
             <form id="chat-form" class="d-flex">
-                <input type="text" id="user-message" class="form-control me-2" placeholder="Type your message..." autocomplete="off" required>
-                <button type="submit" class="btn btn-primary">Send</button>
+                <input type="text" id="message" class="form-control me-2" placeholder="Type your message..." autocomplete="off" required>
+                <button type="submit" id="sendBtn" class="btn btn-primary">Send</button>
             </form>
         </div>
     </div>
 </div>
 
 <!-- Socket.IO and JavaScript code here -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js" integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
 <script src="https://cdn.socket.io/4.7.2/socket.io.min.js"></script>
-<script>
-    // Connect to Socket.IO with the appropriate room
-    const socket = io({ autoConnect: false, query: { room: '{{ current_user.department }}' } });
-
-    document.addEventListener("DOMContentLoaded", function() {
-        // Subscribe to the receive_message event
-        socket.on("receive_message", function(data) {
-            let chatMessages = document.getElementById("chat-messages");
-            let messageElement = document.createElement("div");
-            messageElement.innerHTML = `<strong>${data.username}:</strong> ${data.message}`;
-            chatMessages.appendChild(messageElement);
-            chatMessages.scrollTop = chatMessages.scrollHeight;
-        });
+<script type="text/JavaScript">
+    $(document).ready(function() { 
+        var socket = io.connect("http://localhost:80");
         
-        // Connect to Socket.IO after DOMContentLoaded
-        socket.connect();
+        // Join a room based on the current page
+        var room = "{{ room }}"; // Assume `room` is passed from Flask
+        socket.emit('join', room);
 
-        // Handle form submission to send messages
-        document.getElementById("chat-form").addEventListener("submit", function(event) {
-            event.preventDefault();
-            sendMessage();
+        socket.on("connect", function() { 
+            socket.send("{{ current_user.username }} connected to room: " + room);
+        });
+
+        socket.on("message", function(data) {
+            $("#messages").append($("<p>").html(data));
+        });
+
+        $("#sendBtn").on("click", function() {
+            var message = $("#message").val();
+            var currentTime = new Date().toLocaleTimeString();
+            var formattedMessage = "<span class='text-muted'>" + currentTime + " - {{ current_user.username }}:</span> " + message;
+            socket.emit('room_message', {room: room, message: formattedMessage});
+            $("#message").val("");
         });
     });
-
-    function sendMessage() {
-        let userMessage = document.getElementById("user-message").value;
-        socket.emit("send_message", { username: "{{ current_user.username }}", message: userMessage });
-        document.getElementById("user-message").value = "";
-    }
 </script>
+
+
 
 {% endblock %}
