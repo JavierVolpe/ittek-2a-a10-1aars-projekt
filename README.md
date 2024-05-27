@@ -1,5 +1,5 @@
 
-# Intranet system v2.0
+# Det bedste Intranet
 
 ## Gruppe 10 - 2A - E023 - KEA:
 ### Emil Fabricius Schlosser
