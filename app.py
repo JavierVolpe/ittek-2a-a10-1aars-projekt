@@ -6,15 +6,16 @@ from flask_sqlalchemy import SQLAlchemy
 from datetime import datetime
 from auth import authenticate, User, get_user_groups
 from news import get_latest_news, add_post_to_database
+from config import Config 
 
 # Initialize the Flask application
 app = Flask(__name__)
 
 # Set the secret key for the application (used for session management)
-app.secret_key = 'your_secret_key_is_not_thisone'
+app.secret_key = Config.SECRET_KEY
 
 # Configure the database URI for SQLAlchemy
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///app.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = Config.DATABASE_URI
 
 # Initialize SQLAlchemy with the app
 db = SQLAlchemy(app)
@@ -30,8 +31,8 @@ socketio = SocketIO(app)
 login_manager.login_view = "/login"
 
 # Configuration for the LDAP server
-server_uri = "ldap://10.0.0.4:389"
-domain = "A10.dk"
+server_uri = Config.LDAP_SERVER_URI
+domain = Config.LDAP_DOMAIN
 
 # Define the MessageCard model for the database
 class MessageCard(db.Model):
