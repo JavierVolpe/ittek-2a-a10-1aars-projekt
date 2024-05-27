@@ -11,4 +11,3 @@ class Config:
     LDAP_DOMAIN = "A10.dk"
 
 
-
