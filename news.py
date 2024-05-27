@@ -14,7 +14,7 @@ Når en anmodning er startet, oprettes en unik instans af g for den anmodning.
 Når anmodningen er færdig, fjernes instansen af g, og eventuelle data, der er gemt i den, går tabt. 
 Derfor er g nyttig til at gemme data, der kun er relevante for en enkelt anmodning. """
     
-DATABASE = 'database.db'
+NEWS_DATABASE = Config.NEWS_DATABASE
 
 def get_db():
     # 'g' is a global object in Flask which is used to store data during an application context.
@@ -25,7 +25,7 @@ def get_db():
     # If 'db' is 'None', this means the database connection has not been established yet.
     if db is None:
         # So, we connect to the database and store this connection in 'g._database'.
-        db = g._database = sqlite3.connect(DATABASE)
+        db = g._database = sqlite3.connect(NEWS_DATABASE)
 
         # The 'row_factory' attribute decides how rows will be returned from the cursor.
         # Here we set it to 'sqlite3.Row' which allows us to access the columns in a row by name.
@@ -34,7 +34,7 @@ def get_db():
     # Finally, we return the 'db' object which now represents our database connection.
     return db
     
-def get_latest_news(permissions, page=1, page_size=5):
+def get_latest_news(permissions, page=1, page_size=Config.PAGE_SIZE):
     # Connect to the database
     db = get_db()
 

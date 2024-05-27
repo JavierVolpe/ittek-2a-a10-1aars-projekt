@@ -61,8 +61,8 @@ def get_user_groups(username):
         # Create the server object without SSL
         server = ldap3.Server(server_uri, get_info=ldap3.ALL)
         # Note: Use a service account or bind anonymously if your LDAP server allows
-        service_account_username = "A10"
-        service_account_password = "Password123!"
+        service_account_username = Config.LDAP_SERVICE_USERNAME
+        service_account_password = Config.LDAP_SERVICE_PASSWORD
         connection = ldap3.Connection(server, user=f"{service_account_username}@{domain}", password=service_account_password)
 
         # Attempt to bind to the server
