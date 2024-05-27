@@ -60,16 +60,25 @@ def load_user(username):
     user.groups = get_user_groups(username)
     return user
 
-# Route for the home page
+# Definerer en rute for hjemmesiden, der accepterer både GET og POST anmodninger
 @app.route("/", methods=["GET", "POST"])
 def home():
+    # Tjekker om anmodningen er en POST anmodning
     if request.method == "POST":
+        # Henter indholdet fra formen i anmodningen
         content = request.form['content']
+        # Opretter et nyt MessageCard objekt med brugerens navn, indholdet fra formen, og gruppen "main"
         card = MessageCard(author=current_user.username, content=content, group="main")
+        # Tilføjer det nye MessageCard objekt til databasen session
         db.session.add(card)
+        # Committer (gemmer) ændringerne i databasen session
         db.session.commit()
+        # Omdirigerer brugeren tilbage til den side, de kom fra
         return redirect(request.referrer)
+    # Hvis anmodningen ikke er en POST anmodning (dvs. det er en GET anmodning)
+    # Henter alle MessageCard objekter fra gruppen "main", sorteret efter tidsstempel i faldende rækkefølge
     cards = MessageCard.query.filter_by(group="main").order_by(MessageCard.timestamp.desc()).all()
+    # Returnerer hjemmesiden, og passerer MessageCard objekterne og datetime modulet til skabelonen
     return render_template("home.html", cards=cards, datetime=datetime)
 
 # Route for the login page
