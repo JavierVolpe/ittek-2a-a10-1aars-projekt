@@ -1,7 +1,6 @@
 {% extends "base.html" %}
 {% block title %}Message Boards{% endblock %}
 {% block content %}
-<h2 class="text-center">Message Boards</h2>
 <div>
     {% for group in current_user.groups %}
     <h3><a href="/{{ group }}-chat">{{ group }} Board</a></h3>
