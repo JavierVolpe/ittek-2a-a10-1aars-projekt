@@ -40,7 +40,7 @@ class MessageCard(db.Model):
     id = db.Column(db.Integer, primary_key=True)  # Primary key
     author = db.Column(db.String(150), nullable=False)  # Author of the message
     content = db.Column(db.Text, nullable=False)  # Content of the message
-    timestamp = db.Column(db.DateTime, default=datetime.now())  # Timestamp of the message
+    timestamp = db.Column(db.DateTime, default=datetime.now)  # Timestamp of the message
     group = db.Column(db.String(150), nullable=False)  # Group to which the message belongs
 
 # Create the database tables if they don't exist
