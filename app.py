@@ -220,5 +220,5 @@ def handle_send_message_event(data):
     emit('receive_message', data, broadcast=True)
 
 # Main entry point for running the app
-if __name__ == "__main__":
-    socketio.run(app, host="0.0.0.0", port=5000, debug=True)
+if __name__ == "__main__": 
+    socketio.run(app, host="0.0.0.0", port=Config.SERVER_PORT, debug=True) 
