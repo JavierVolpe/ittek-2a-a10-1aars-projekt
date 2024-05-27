@@ -221,4 +221,4 @@ def handle_send_message_event(data):
 
 # Main entry point for running the app
 if __name__ == "__main__": 
-    socketio.run(app, host="0.0.0.0", port=80, debug=True) # Port 80: skal køres som root
+    socketio.run(app, host="0.0.0.0", port=Config.SERVER_PORT, debug=True) 
