@@ -215,6 +215,8 @@ def delete_post(post_id):
         db.session.commit()
     return redirect(url_for('admin_panel'))
 
+#tager fra flask socketio documentation og modficeret https://flask-socketio.readthedocs.io/en/latest/getting_started.html
+
 # Socket.IO event handler for joining a room
 @socketio.on('join')
 def handle_join(room):
