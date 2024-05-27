@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # Import necessary modules from Flask and other libraries
 from flask import Flask, redirect, request, render_template, url_for, g
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user, UserMixin
