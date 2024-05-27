@@ -166,7 +166,7 @@ def managerchat():
         return redirect("/")
 
 # Route to handle message cards
-@app.route("/message-cards", methods=["GET", "POST"])
+@app.route("/message-poster", methods=["GET", "POST"])
 @login_required
 def message_cards():
     if request.method == "POST":
@@ -179,7 +179,7 @@ def message_cards():
     
     user_groups = current_user.groups
     cards = MessageCard.query.filter(MessageCard.group.in_(user_groups)).order_by(MessageCard.timestamp.desc()).all()
-    return render_template("message_cards.html", cards=cards, datetime=datetime)
+    return render_template("message_poster.html", cards=cards, datetime=datetime)
 
 # Route for group-specific chat pages
 @app.route("/<group>-chat")
