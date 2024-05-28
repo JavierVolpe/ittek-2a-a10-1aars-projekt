@@ -1,38 +1,15 @@
+# -*- coding: utf-8 -*-
 import sqlite3
-from flask import g
 import logging
 from config import Config
 
-""" Modulen g i Flask er en global variabel, der er unik for hver anmodning. 
-Den bruges til at gemme data, som du vil have adgang
-til i flere funktioner under behandlingen af en enkelt anmodning.
-
-I din kode bruges g til at gemme en databaseforbindelse, så den kan genbruges i flere funktioner,
-uden at du behøver at oprette en ny forbindelse hver gang.
-
-Når en anmodning er startet, oprettes en unik instans af g for den anmodning. 
-Når anmodningen er færdig, fjernes instansen af g, og eventuelle data, der er gemt i den, går tabt. 
-Derfor er g nyttig til at gemme data, der kun er relevante for en enkelt anmodning. """
-    
 NEWS_DATABASE = Config.NEWS_DATABASE
 
 def get_db():
-    # 'g' is a global object in Flask which is used to store data during an application context.
-    # The 'getattr' function tries to get the '_database' attribute from the 'g' object. 
-    # If it doesn't exist, it returns 'None'.
-    db = getattr(g, '_database', None)
-
-    # If 'db' is 'None', this means the database connection has not been established yet.
-    if db is None:
-        # So, we connect to the database and store this connection in 'g._database'.
-        db = g._database = sqlite3.connect(NEWS_DATABASE)
-
-        # The 'row_factory' attribute decides how rows will be returned from the cursor.
-        # Here we set it to 'sqlite3.Row' which allows us to access the columns in a row by name.
-        db.row_factory = sqlite3.Row
-
-    # Finally, we return the 'db' object which now represents our database connection.
+    db = sqlite3.connect(NEWS_DATABASE)
+    db.row_factory = sqlite3.Row # Tillader os at tilgå kolonner med navn
     return db
+
     
 def get_latest_news(permissions, page=1, page_size=Config.PAGE_SIZE):
     # Connect to the database
