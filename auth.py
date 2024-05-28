@@ -43,12 +43,8 @@ def authenticate(server_uri, domain, username, password):
             attributes=['memberOf']
         )
 
-        # Get the list of groups
-        groups = [group.split(',')[0].split('=')[1] for group in connection.entries[0]['memberOf']]
-        logging.debug(f"User groups: {groups}")
-
-        #user = User(username, groups)
-        return User(username, groups)
+        #user = User(username)
+        return User(username)
 
     except ldap3.core.exceptions.LDAPException as e:
         logging.error(f"LDAP exception: {e}")
