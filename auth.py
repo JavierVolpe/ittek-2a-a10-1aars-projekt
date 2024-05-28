@@ -36,13 +36,6 @@ def authenticate(server_uri, domain, username, password):
         else:
             logging.debug("Successfully authenticated.")
 
-        # Search for the user's groups
-        connection.search(
-            search_base=f"dc={domain.split('.')[0]},dc={domain.split('.')[1]}",
-            search_filter=f"(sAMAccountName={username})",
-            attributes=['memberOf']
-        )
-
         #user = User(username)
         return User(username)
 
