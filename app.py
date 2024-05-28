@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 # Import necessary modules from Flask and other libraries
-from flask import Flask, redirect, request, render_template, url_for, g
+from flask import Flask, redirect, request, render_template, url_for
 from flask_login import LoginManager, login_user, logout_user, login_required, current_user, UserMixin
 from flask_socketio import SocketIO, send, join_room, leave_room, emit
 from flask_sqlalchemy import SQLAlchemy
@@ -48,11 +48,11 @@ with app.app_context():
     db.create_all()
 
 # Function to close the database connection after each request
-@app.teardown_appcontext
-def close_connection(exception):
-    db = getattr(g, '_database', None)
-    if db is not None:
-        db.close()
+# # @app.teardown_appcontext
+# # def close_connection(exception):
+# #     db = getattr(g, '_database', None)
+# #     if db is not None:
+# #         db.close()
 
 # Function to load the user from the database
 @login_manager.user_loader
