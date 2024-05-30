@@ -24,19 +24,15 @@ def authenticate(server_uri, domain, username, password):
     logging.debug(f"User DN: {user_dn}")
 
     try:
-        # Create the server object without SSL
         server = ldap3.Server(server_uri, get_info=ldap3.ALL)
-        # Create the connection object
         connection = ldap3.Connection(server, user=user_dn, password=password)
 
-        # Attempt to bind to the server
         if not connection.bind():
             logging.error("Failed to bind to the server. Invalid credentials.")
             raise ValueError("Invalid credentials")
         else:
             logging.debug("Successfully authenticated.")
 
-        #user = User(username)
         return User(username)
 
     except ldap3.core.exceptions.LDAPException as e:
@@ -48,19 +44,15 @@ def get_user_groups(username):
     logging.debug(f"Fetching groups for user DN: {user_dn}")
 
     try:
-        # Create the server object without SSL
         server = ldap3.Server(server_uri, get_info=ldap3.ALL)
-        # Note: Use a service account or bind anonymously if your LDAP server allows
         service_account_username = Config.LDAP_SERVICE_USERNAME
         service_account_password = Config.LDAP_SERVICE_PASSWORD
         connection = ldap3.Connection(server, user=f"{service_account_username}@{domain}", password=service_account_password)
 
-        # Attempt to bind to the server
         if not connection.bind():
             logging.error("Failed to bind to the server with the service account.")
             raise ValueError("Failed to connect to LDAP server")
 
-        # Search for the user's groups
         connection.search(
             search_base=f"dc={domain.split('.')[0]},dc={domain.split('.')[1]}",
             search_filter=f"(sAMAccountName={username})",
@@ -71,7 +63,6 @@ def get_user_groups(username):
             logging.error("No entries found for the user.")
             return []
 
-        # Get the list of groups
         groups = [group.split(',')[0].split('=')[1] for group in connection.entries[0]['memberOf']]
         logging.debug(f"User groups: {groups}")
         return groups

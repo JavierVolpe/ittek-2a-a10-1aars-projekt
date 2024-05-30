@@ -25,8 +25,7 @@
     $(document).ready(function() { 
         var socket = io.connect("http://localhost:443");
         
-        // Join a room based on the current page
-        var room = "{{ room }}"; // Assume `room` is passed from Flask
+        var room = "{{ room }}"; 
         socket.emit('join', room);
 
         socket.on("connect", function() { 
