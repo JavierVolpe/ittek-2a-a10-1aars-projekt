@@ -33,7 +33,7 @@
                         <ul class="dropdown-menu">
                             {% for group in current_user.groups %}
                                 {% if group != 'Public' %}
-                                    <li><a class="dropdown-item" href="/{{ group }}-chat">{{ group }} Board</a></li>
+                                    <li><a class="dropdown-item" href="/{{ group }}-boards">{{ group }} Board</a></li>
                                 {% endif %}
                             {% endfor %}
                         </ul>
