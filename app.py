@@ -149,7 +149,7 @@ def message_cards():
     cards = MessageCard.query.filter(MessageCard.group.in_(user_groups)).order_by(MessageCard.timestamp.desc()).all()
     return render_template("message_poster.html", cards=cards, datetime=datetime)
 
-@app.route("/<group>-chat")
+@app.route("/<group>-boards")
 @login_required
 def group_chat(group):
     if group not in current_user.groups:
