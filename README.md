@@ -9,18 +9,22 @@ Det Bedste Intranet
 
 * * * * *
 
-Det Bedste Intranet is a secure and feature-rich intranet platform built using Flask, Flask-Login, Flask-SocketIO, and SQLAlchemy. It provides an internal communication and collaboration tool for organizations, featuring authentication via LDAP, news posting, chat rooms, and message boards tailored to user groups.
+Det Bedste Intranet is a secure and feature-rich intranet platform developed as part of our first-year project for the IT Technology program at KEA. The application is built using Flask, Flask-Login, Flask-SocketIO, and SQLAlchemy, providing an internal communication and collaboration tool for organizations. It features LDAP authentication, news posting, group-based chat rooms, and message boards tailored to user groups.
 
 Table of Contents
 -----------------
 
 -   [Features](#features)
--   [Architecture Overview](#architecture-overview)
 -   [Prerequisites](#prerequisites)
 -   [Installation](#installation)
 -   [Configuration](#configuration)
 -   [Running the Application](#running-the-application)
 -   [Usage](#usage)
+    -   [Authentication](#authentication)
+    -   [News Feed](#news-feed)
+    -   [Message Boards](#message-boards)
+    -   [Real-Time Chat](#real-time-chat)
+    -   [Admin Panel](#admin-panel)
 -   [Security Considerations](#security-considerations)
 -   [Acknowledgements](#acknowledgements)
 -   [License](#license)
@@ -28,32 +32,22 @@ Table of Contents
 Features
 --------
 
--   **User Authentication**: Secure login using LDAP authentication.
--   **Group-Based Access Control**: Access to specific features and chat rooms based on LDAP groups (e.g., IT, HR, Manager).
--   **News Feed**: Users can view and create news posts with permissions.
+-   **LDAP Authentication**: Secure login using LDAP credentials.
+-   **Group-Based Access Control**: Access control based on LDAP group memberships (e.g., IT, HR, Manager).
+-   **News Feed**: Users can view and create news posts with specific permissions.
 -   **Message Boards**: Post and view message cards in group-specific message boards.
 -   **Real-Time Chat**: Group-specific chat rooms using SocketIO for real-time communication.
 -   **Admin Panel**: Admin users can manage posts and perform administrative tasks.
 -   **Profile Page**: Users can view their profile and group memberships.
 
-Architecture Overview
----------------------
-
-The application is structured using the Flask framework and utilizes:
-
--   **Flask-Login**: For managing user sessions and authentication.
--   **Flask-SocketIO**: Enables real-time communication for chat rooms.
--   **Flask-SQLAlchemy**: ORM for database interactions.
--   **LDAP**: For authenticating users against an LDAP server.
--   **SQLite**: Used for storing news posts and message cards.
 
 Prerequisites
 -------------
 
--   **Python 3.7+**
+-   **Python 3.7 or higher**
 -   **Virtual Environment**: Recommended to isolate dependencies.
 -   **LDAP Server**: Access to an LDAP server for authentication.
--   **Certificates**: SSL certificates (`cert.pem` and `key.pem`) for HTTPS.
+-   **SSL Certificates**: `cert.pem` and `key.pem` for HTTPS (can be self-signed for development).
 -   **SQLite Database**: Default database or configure another database in `config.py`.
 
 Installation
@@ -65,7 +59,7 @@ Installation
 
     Copy code
 
-    `git clone https://github.com/JavierVolpe/ittek-2a-a10-1aars-projekt/ittek-2a-a10-1aars-projekt.git
+    `git clone https://github.com/JavierVolpe/ittek-2a-a10-1aars-projekt.git
     cd ittek-2a-a10-1aars-projekt`
 
 2.  **Create a Virtual Environment**
@@ -87,7 +81,7 @@ Installation
 
 4.  **Set Up the Database**
 
-    The application uses SQLite by default. The necessary tables will be created automatically when you run the application for the first time.
+    The necessary tables will be created automatically when you run the application for the first time.
 
 5.  **Obtain SSL Certificates**
 
@@ -96,42 +90,42 @@ Installation
 Configuration
 -------------
 
-1.  **Create a `config.py` File**
+The `config.py` file contains all the configuration variables needed to run the application. It is already provided in the repository. Review and update it with your specific settings:
 
-    Create a `config.py` file in the project root with the following content:
+python
 
-    python
+Copy code
 
-    Copy code
+`class Config:
+    SECRET_KEY = 'your_secret_key'
+    LDAP_SERVER_URI = 'ldap://your-ldap-server'
+    LDAP_DOMAIN = 'yourdomain.com'
+    DATABASE_URI = 'sqlite:///your-database.db'
+    NEWS_DATABASE = 'news.db'
+    PAGE_SIZE = 5  # Number of news items per page
+    SERVER_PORT = 5000  # Port to run the server
+    DEBUG = False  # Set to True for debug mode`
 
-    `class Config:
-        SECRET_KEY = 'your_secret_key'
-        LDAP_SERVER_URI = 'ldap://your-ldap-server'
-        LDAP_DOMAIN = 'yourdomain.com'
-        DATABASE_URI = 'sqlite:///your-database.db'
-        NEWS_DATABASE = 'news.db'
-        PAGE_SIZE = 5  # Number of news items per page
-        SERVER_PORT = 5000  # Port to run the server
-        DEBUG = False  # Set to True for debug mode`
+### Important Configuration Variables
 
-    Replace the placeholders with your actual configuration values.
-
-2.  **Configure LDAP Authentication**
-
-    -   **LDAP_SERVER_URI**: The URI of your LDAP server.
-    -   **LDAP_DOMAIN**: Your organization's LDAP domain.
-3.  **Configure the Database**
-
-    -   **DATABASE_URI**: The URI for your database. By default, it uses SQLite.
-    -   **NEWS_DATABASE**: The path to your news database file.
-4.  **Set Secret Key**
-
-    -   **SECRET_KEY**: A secret key for securely signing the session cookie. Keep this value secret.
+-   **SECRET_KEY**: A secret key for securely signing the session cookie. Keep this value secret.
+-   **LDAP_SERVER_URI**: The URI of your LDAP server.
+-   **LDAP_DOMAIN**: Your organization's LDAP domain.
+-   **DATABASE_URI**: The URI for your database. By default, it uses SQLite.
+-   **NEWS_DATABASE**: The path to your news database file.
 
 Running the Application
 -----------------------
 
-1.  **Start the Application**
+1.  **Activate the Virtual Environment**
+
+    bash
+
+    Copy code
+
+    `source venv/bin/activate  # On Windows use 'venv\Scripts\activate'`
+
+2.  **Start the Application**
 
     bash
 
@@ -139,7 +133,7 @@ Running the Application
 
     `python app.py`
 
-    Or with Flask's development server:
+    Or, if you prefer to use Flask's development server:
 
     bash
 
@@ -147,7 +141,7 @@ Running the Application
 
     `flask run --cert=cert.pem --key=key.pem --host=0.0.0.0 --port=5000`
 
-2.  **Access the Application**
+3.  **Access the Application**
 
     Open your web browser and navigate to:
 
@@ -160,34 +154,35 @@ Running the Application
 Usage
 -----
 
-### Login
+### Authentication
 
--   Navigate to the `/login` route.
--   Enter your LDAP credentials to log in.
+-   **Login**: Navigate to `/login` and enter your LDAP credentials.
+-   **Logout**: Click on the logout button or navigate to `/logout`.
+-   **Profile**: View your username and group memberships at `/profile`.
 
 ### News Feed
 
--   View the latest news posts on the `/news` route.
--   Create a new post on the `/create` route (must be logged in).
--   Posts can be assigned permissions to control visibility.
+-   **View News**: Navigate to `/news` to see the latest news posts.
+-   **Create News Post**: Go to `/create` to add a new news post (must be logged in).
+-   **Pagination**: Use the page navigation to view older posts.
 
 ### Message Boards
 
--   Access message boards specific to your groups.
--   Post new messages or view existing ones.
+-   **Post a Message**: Navigate to `/message-poster` to post a new message card.
+-   **View Messages**: View existing message cards relevant to your groups.
 
 ### Real-Time Chat
 
--   Join group-specific chat rooms:
-    -   IT Chat: `/it-chat`
-    -   HR Chat: `/hr-chat`
-    -   Manager Chat: `/manager-chat`
--   Real-time messaging powered by SocketIO.
+-   **IT Chat**: `/it-chat` (accessible to users in the 'IT' group)
+-   **HR Chat**: `/hr-chat` (accessible to users in the 'HR' group)
+-   **Manager Chat**: `/manager-chat` (accessible to users in the 'Manager' group)
+
+Engage in real-time conversations with group members.
 
 ### Admin Panel
 
--   Admin users (members of the `Enterprise Admins` group) can access the admin panel at `/admin-panel`.
--   Delete posts and manage content.
+-   **Access**: Available at `/admin-panel` for users in the 'Enterprise Admins' group.
+-   **Manage Posts**: View and delete posts from all users.
 
 Security Considerations
 -----------------------
@@ -197,17 +192,18 @@ Security Considerations
 -   **Group-Based Access Control**: Access to routes and features is restricted based on LDAP group membership.
 -   **Input Validation**: User inputs are validated to prevent SQL injection and XSS attacks.
 -   **Session Management**: Secure session handling using Flask-Login.
+-   **No Hardcoded Credentials**: Ensure that no credentials are hardcoded in the codebase.
 
 Acknowledgements
 ----------------
 
-This project was developed as part of the coursework for the ITTEK program at KEA.
+This project was developed as part of the first-year project for the ITTEK program at KEA.
 
 -   **Emil Fabricius Schlosser**
 -   **Javier Alejandro Volpe**
 -   **Morten Hamborg Johansen**
 
-Special thanks to the instructors and peers who supported this project.
+We would like to thank our instructors and classmates for their support and guidance throughout the development of this project.
 
 License
 -------
