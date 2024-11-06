@@ -55,18 +55,12 @@ Installation
 
 1.  **Clone the Repository**
 
-    bash
-
-    Copy code
 
     `git clone https://github.com/JavierVolpe/ittek-2a-a10-1aars-projekt.git
     cd ittek-2a-a10-1aars-projekt`
 
 2.  **Create a Virtual Environment**
 
-    bash
-
-    Copy code
 
     `python3 -m venv venv
     source venv/bin/activate  # On Windows use 'venv\Scripts\activate'`
@@ -90,21 +84,7 @@ Installation
 Configuration
 -------------
 
-The `config.py` file contains all the configuration variables needed to run the application. It is already provided in the repository. Review and update it with your specific settings:
-
-python
-
-Copy code
-
-`class Config:
-    SECRET_KEY = 'your_secret_key'
-    LDAP_SERVER_URI = 'ldap://your-ldap-server'
-    LDAP_DOMAIN = 'yourdomain.com'
-    DATABASE_URI = 'sqlite:///your-database.db'
-    NEWS_DATABASE = 'news.db'
-    PAGE_SIZE = 5  # Number of news items per page
-    SERVER_PORT = 5000  # Port to run the server
-    DEBUG = False  # Set to True for debug mode`
+The `config.py` file contains all the configuration variables needed to run the application. Review and update it with your specific settings.
 
 ### Important Configuration Variables
 
@@ -119,35 +99,20 @@ Running the Application
 
 1.  **Activate the Virtual Environment**
 
-    bash
-
-    Copy code
 
     `source venv/bin/activate  # On Windows use 'venv\Scripts\activate'`
 
 2.  **Start the Application**
 
-    bash
-
-    Copy code
-
     `python app.py`
 
     Or, if you prefer to use Flask's development server:
-
-    bash
-
-    Copy code
 
     `flask run --cert=cert.pem --key=key.pem --host=0.0.0.0 --port=5000`
 
 3.  **Access the Application**
 
     Open your web browser and navigate to:
-
-    arduino
-
-    Copy code
 
     `https://localhost:5000/`
 
